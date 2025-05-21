@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            background-color: #000;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffcc00;
+            text-align: center;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            text-shadow: 0 0 5px rgba(255, 204, 0, 0.5);
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .start-button {
+            background-color: #00cc88;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 14px 0;
+            width: 100%;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 8px rgba(0, 204, 136, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .start-button:hover {
+            background-color: #00dd99;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 204, 136, 0.4);
+        }
+
+        .start-button:active {
+            transform: translateY(1px);
+        }
+
+        /* Panel VIP interface (initially hidden) */
+        #panelVIP {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 100;
+        }
+
+        .panel {
+            width: 300px;
+            border: 1px solid #333;
+            padding: 15px;
+            background-color: #1a1a1a;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 8px;
+        }
+        
+        .panel-title {
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .pixels {
+            color: yellow;
+            text-shadow: 0 0 3px rgba(255, 255, 0, 0.5);
+        }
+        
+        .panel-vip {
+            color: #00ffcc;
+            text-shadow: 0 0 3px rgba(0, 255, 204, 0.5);
+        }
+        
+        .panel-subtitle {
+            font-size: 14px;
+            color: #00ffcc;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase;
+        }
+        
+        .close-btn {
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            padding: 0 5px;
+            border-radius: 3px;
+            transition: all 0.2s ease;
+        }
+        
+        .close-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .option-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+        
+        .option-label {
+            font-size: 12px;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .toggle {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 22px;
+        }
+        
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #333;
+            border-radius: 34px;
+            transition: .4s;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            border-radius: 50%;
+            transition: .4s;
+        }
+        
+        input:checked + .slider {
+            background-color: #00ffcc;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+        
+        .button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            text-align: center;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            font-size: 13px;
+        }
+        
+        .recovery-btn {
+            background-color: #ff6600;
+            color: white;
+        }
+        
+        .recovery-btn:hover {
+            background-color: #ff7722;
+        }
+        
+        .report-btn {
+            background-color: #cc0000;
+            color: white;
+        }
+        
+        .report-btn:hover {
+            background-color: #dd1111;
+        }
+        
+        .footer {
+            font-size: 11px;
+            color: #999;
+            margin-top: 15px;
+            text-align: center;
+            border-top: 1px solid #333;
+            padding-top: 8px;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 50;
+            backdrop-filter: blur(3px);
+        }
+        
+        /* Loading animation */
+        .loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 150;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid rgba(0, 255, 204, 0.3);
+            border-top-color: #00ffcc;
+            animation: spin 1s infinite linear;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .loading-text {
+            color: #00ffcc;
+            font-size: 14px;
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="startScreen">
+        <div class="title">AIM Z PANEL</div>
+        <div class="subtitle">Free Fire Global & Free Fire Max</div>
+        <button class="start-button" id="iniciarBtn">ĐĂNG NHẬP</button>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <div class="loading-text">Đang kết nối...</div>
+    </div>
+
+    <div id="panelVIP">
+        <div class="panel">
+            <div class="header">
+                <div>
+                    <span class="panel-title"><span class="pixels">AIM Z</span> <span class="panel-vip">PANEL PRO</span></span>
+                </div>
+                <div class="close-btn" id="closeBtn">✕</div>
+            </div>
+            
+            <div class="panel-subtitle">AIM Z PANEL</div>
+            
+            <div class="option-row">
+                <span class="option-label">FIX RUNG TÂM (NORECOIL)</span>
+                <label class="toggle">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="option-row">
+                <span class="option-label">AIMLOCK 80%</span>
+                <label class="toggle">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="option-row">
+                <span class="option-label">AIM HS DRAG</span>
+                <label class="toggle">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="option-row">
+                <span class="option-label">ANTI BAN</span>
+                <label class="toggle">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="option-row">
+                <span class="option-label">AIMTRICK PRO</span>
+                <label class="toggle">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <button class="button recovery-btn">AN TOÀN</button>
+            <button class="button report-btn">ANTI CHEAT FREE FIRE (ON)</button>
+            
+            <div class="footer">
+                User: PoVipReg | Premium Version 2.6.8
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get elements
+        const iniciarBtn = document.getElementById('iniciarBtn');
+        const startScreen = document.getElementById('startScreen');
+        const panelVIP = document.getElementById('panelVIP');
+        const overlay = document.getElementById('overlay');
+        const closeBtn = document.getElementById('closeBtn');
+        const loading = document.getElementById('loading');
+        
+        // Show loading and then panel when iniciar button is clicked
+        iniciarBtn.addEventListener('click', function() {
+            startScreen.style.display = 'none';
+            overlay.style.display = 'block';
+            loading.style.display = 'block';
+            
+            // Simulate loading time
+            setTimeout(function() {
+                loading.style.display = 'none';
+                panelVIP.style.display = 'block';
+            }, 2000); // 2 seconds loading time
+        });
+
+        // Hide panel when close button is clicked
+        closeBtn.addEventListener('click', function() {
+            panelVIP.style.display = 'none';
+            overlay.style.display = 'none';
+            startScreen.style.display = 'flex';
+        });
+        
+        // Toggle switches functionality
+        const toggles = document.querySelectorAll('.toggle input');
+        toggles.forEach(toggle => {
+            toggle.addEventListener('change', function() {
+                const row = this.closest('.option-row');
+                const label = row.querySelector('.option-label');
+                
+                if (this.checked) {
+                    label.style.fontWeight = 'bold';
+                } else {
+                    label.style.fontWeight = 'normal';
+                }
+            });
+        });
+        
+        // Button animations
+        const buttons = document.querySelectorAll('.button');
+        buttons.forEach(button => {
+            button.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>
